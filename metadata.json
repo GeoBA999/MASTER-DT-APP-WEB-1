@@ -1,0 +1,7 @@
+{
+  "name": "Master DT",
+  "description": "Daily fantasy football platform for Liga BetPlay and international tournaments with private leagues, token economy, and agent network.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

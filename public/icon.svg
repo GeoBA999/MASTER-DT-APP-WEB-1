@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#071410" />
+      <stop offset="50%" stop-color="#0C1D16" />
+      <stop offset="100%" stop-color="#0F2319" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCE082" />
+      <stop offset="50%" stop-color="#E6BE55" />
+      <stop offset="100%" stop-color="#B88A24" />
+    </linearGradient>
+    <linearGradient id="limeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E2FFA0" />
+      <stop offset="100%" stop-color="#C9F04D" />
+    </linearGradient>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7BEBE3" />
+      <stop offset="100%" stop-color="#54C3BB" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background Shield/Rounded Canvas -->
+  <rect width="512" height="512" rx="108" fill="url(#bgGrad)" />
+  <rect x="12" y="12" width="488" height="488" rx="98" fill="none" stroke="url(#goldGrad)" stroke-width="4" stroke-opacity="0.3" />
+
+  <!-- Pitch markings watermark -->
+  <circle cx="256" cy="256" r="140" fill="none" stroke="#54C3BB" stroke-width="2" stroke-opacity="0.15" stroke-dasharray="6 6" />
+  <line x1="80" y1="256" x2="432" y2="256" stroke="#54C3BB" stroke-width="2" stroke-opacity="0.15" />
+
+  <!-- Tactical Hex Shield -->
+  <polygon points="256,70 390,130 390,320 256,430 122,320 122,130" 
+           fill="#0F2319" stroke="url(#goldGrad)" stroke-width="6" />
+
+  <!-- Inner Crest Glow -->
+  <polygon points="256,92 370,144 370,308 256,406 142,308 142,144" 
+           fill="#071410" stroke="url(#tealGrad)" stroke-width="2" stroke-opacity="0.4" />
+
+  <!-- Master Crown / Star DT Top -->
+  <path d="M210,165 L256,128 L302,165 L288,205 L224,205 Z" fill="url(#goldGrad)" filter="url(#glow)" />
+  <circle cx="256" cy="122" r="8" fill="#C9F04D" />
+  <circle cx="206" cy="162" r="6" fill="#E6BE55" />
+  <circle cx="306" cy="162" r="6" fill="#E6BE55" />
+
+  <!-- Monogram "DT" Stylized -->
+  <!-- "D" -->
+  <path d="M 190,230 L 230,230 C 255,230 268,245 268,270 C 268,295 255,310 230,310 L 190,310 Z M 212,250 L 212,290 L 228,290 C 242,290 248,282 248,270 C 248,258 242,250 228,250 Z" 
+        fill="url(#limeGrad)" />
+  <!-- "T" -->
+  <path d="M 265,230 L 322,230 L 322,250 L 304,250 L 304,310 L 283,310 L 283,250 L 265,250 Z" 
+        fill="url(#tealGrad)" />
+
+  <!-- Colombian Accent Tri-Stripe on bottom chevron -->
+  <path d="M 200,355 L 256,385 L 312,355" fill="none" stroke="#FCE082" stroke-width="5" stroke-linecap="round" />
+  <path d="M 215,368 L 256,391 L 297,368" fill="none" stroke="#3884D6" stroke-width="4" stroke-linecap="round" />
+  <path d="M 230,381 L 256,397 L 282,381" fill="none" stroke="#FF7A59" stroke-width="3" stroke-linecap="round" />
+</svg>
