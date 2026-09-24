@@ -84,7 +84,7 @@ export const WalletView: React.FC<WalletViewProps> = ({
     }
     onRequestWithdrawal(withdrawTokens, withdrawDestination);
     setShowWithdrawModal(false);
-    alert(`Solicitud de retiro por ${withdrawTokens} DT ($${(withdrawTokens * 1000).toLocaleString('es-CO')} COP) enviada con éxito a tu red de agente.`);
+    alert(`Solicitud de retiro por ${withdrawTokens} DT ($${withdrawTokens.toLocaleString('es-CO')} COP) enviada con éxito a tu red de agente.`);
   };
 
   return (
@@ -105,7 +105,7 @@ export const WalletView: React.FC<WalletViewProps> = ({
               <span className="text-lg font-mono font-bold text-gray-300">DT TOKENS</span>
             </div>
             <span className="text-sm font-mono text-[#54C3BB] mt-1 block">
-              Equivalente: ${(userTokens * 1000).toLocaleString('es-CO')} COP (1 DT = $1.000 COP)
+              Equivalente: ${userTokens.toLocaleString('es-CO')} COP (cada 1 token $DT vale 1 peso • cambio 1 a 1)
             </span>
           </div>
 
@@ -158,8 +158,8 @@ export const WalletView: React.FC<WalletViewProps> = ({
           <h3 className="font-display text-xl font-bold text-white tracking-wide">
             Paquetes de Tokens Disponibles
           </h3>
-          <p className="text-xs text-gray-400 mt-0.5">
-            Tarifas oficiales en Pesos Colombianos con entrega instantánea a través de la Red de Agentes Master DT.
+          <p className="text-xs text-[#C9F04D] font-mono mt-0.5">
+            Cada 1 token $DT vale 1 peso - el cambio es uno a uno (1 $DT = $1 COP). Tarifas oficiales en Pesos Colombianos con entrega instantánea a través de la Red de Agentes Master DT.
           </p>
         </div>
 
@@ -187,11 +187,11 @@ export const WalletView: React.FC<WalletViewProps> = ({
 
                 <div>
                   <span className="font-mono text-2xl font-black text-white block mt-1">
-                    {pkg.tokens} DT
+                    {pkg.tokens.toLocaleString('es-CO')} DT
                   </span>
                   {pkg.bonusTokens && (
                     <span className="text-[10px] font-mono text-[#C9F04D] font-bold block">
-                      +{pkg.bonusTokens} DT Bonus
+                      +{pkg.bonusTokens.toLocaleString('es-CO')} DT Bonus
                     </span>
                   )}
                 </div>
@@ -288,11 +288,11 @@ export const WalletView: React.FC<WalletViewProps> = ({
               </div>
 
               <div className="bg-[#071410] p-2.5 rounded-xl border border-[#143426] font-mono text-xs">
-                <span className="text-gray-400 block text-[10px] uppercase">Cálculo de Tokens DT:</span>
+                <span className="text-gray-400 block text-[10px] uppercase">Cálculo de Tokens DT (1:1):</span>
                 <div className="flex items-baseline justify-between mt-0.5">
-                  <span className="text-gray-300">Base: {Math.floor(customAmountCOP / 1000)} DT</span>
+                  <span className="text-gray-300">Base: {Math.floor(customAmountCOP).toLocaleString('es-CO')} DT</span>
                   <span className="text-[#C9F04D] font-bold">
-                    +{Math.floor(Math.floor(customAmountCOP / 1000) * 0.35)} DT Bonus
+                    +{Math.floor(customAmountCOP * 0.35).toLocaleString('es-CO')} DT Bonus
                   </span>
                 </div>
               </div>
@@ -300,7 +300,7 @@ export const WalletView: React.FC<WalletViewProps> = ({
               <div className="bg-[#0C1D16] p-2.5 rounded-xl border border-[#E6BE55]/40 font-mono text-center">
                 <span className="text-[10px] text-gray-400 uppercase block">Total a Recibir:</span>
                 <span className="text-xl font-black text-[#E6BE55] block">
-                  {Math.floor(customAmountCOP / 1000) + Math.floor(Math.floor(customAmountCOP / 1000) * 0.35)} DT
+                  {(Math.floor(customAmountCOP) + Math.floor(customAmountCOP * 0.35)).toLocaleString('es-CO')} DT
                 </span>
               </div>
             </div>
@@ -331,43 +331,29 @@ export const WalletView: React.FC<WalletViewProps> = ({
           </div>
 
           {/* Action Row */}
+          <div className="p-3 rounded-xl bg-[#14281E]/60 border border-[#234D35] flex items-center justify-between text-xs mb-1">
+            <span className="text-[11px] font-mono text-[#C9F04D] flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 shrink-0" />
+              <span>Modo BETA Freemium: Las recargas con dinero real están temporalmente desactivadas.</span>
+            </span>
+          </div>
+
           {isCustomVIP ? (
             <div className="p-3.5 rounded-xl bg-[#071410] border border-[#E6BE55]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
               <div>
                 <span className="text-white font-bold block text-sm">
-                  Recarga VIP: {Math.floor(customAmountCOP / 1000) + Math.floor(Math.floor(customAmountCOP / 1000) * 0.35)} DT por {formatCOP(customAmountCOP)} vía {paymentMethod}
+                  Recarga VIP: {(Math.floor(customAmountCOP) + Math.floor(customAmountCOP * 0.35)).toLocaleString('es-CO')} DT por {formatCOP(customAmountCOP)} vía {paymentMethod}
                 </span>
                 <span className="text-gray-400 text-[11px]">
                   Canalizado con prioridad VIP a través de la Red de Agentes Oficiales Master DT.
                 </span>
               </div>
               <button
-                disabled={customAmountCOP < 150000}
-                onClick={() => {
-                  if (customAmountCOP < 150000) {
-                    alert('El monto mínimo para la recarga VIP personalizada es de $150.000 COP.');
-                    return;
-                  }
-                  const base = Math.floor(customAmountCOP / 1000);
-                  const bonus = Math.floor(base * 0.35);
-                  onBuyTokens(
-                    {
-                      id: `custom-vip-${Date.now()}`,
-                      tokens: base,
-                      priceCOP: customAmountCOP,
-                      bonusTokens: bonus,
-                      badge: 'VIP Personalizado',
-                    },
-                    paymentMethod
-                  );
-                }}
-                className={`px-5 py-2.5 rounded-xl font-mono font-bold text-xs shadow transition shrink-0 cursor-pointer active:scale-95 ${
-                  customAmountCOP >= 150000
-                    ? 'bg-[#E6BE55] hover:bg-[#d8b04a] text-[#071410]'
-                    : 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                }`}
+                disabled={true}
+                title="Recargas desactivadas en esta prueba BETA Freemium"
+                className="px-5 py-2.5 rounded-xl font-mono font-bold text-xs bg-gray-800 text-gray-500 border border-gray-700 cursor-not-allowed shrink-0"
               >
-                Confirmar Recarga VIP
+                Confirmar Recarga VIP (Desactivado en BETA)
               </button>
             </div>
           ) : (
@@ -381,10 +367,11 @@ export const WalletView: React.FC<WalletViewProps> = ({
                 </span>
               </div>
               <button
-                onClick={() => onBuyTokens(selectedPackage, paymentMethod)}
-                className="px-4 py-2 rounded-xl bg-[#C9F04D] hover:bg-[#D5F565] text-[#071410] font-mono font-bold text-xs shadow transition cursor-pointer active:scale-95 shrink-0"
+                disabled={true}
+                title="Recargas desactivadas en esta prueba BETA Freemium"
+                className="px-4 py-2 rounded-xl bg-gray-800 text-gray-500 font-mono font-bold text-xs border border-gray-700 cursor-not-allowed shrink-0"
               >
-                Confirmar Recarga
+                Confirmar Recarga (Desactivado en BETA)
               </button>
             </div>
           )}
@@ -414,7 +401,7 @@ export const WalletView: React.FC<WalletViewProps> = ({
                   className="w-full px-3 py-2 rounded-xl bg-[#0F2319] border border-[#1E4333] text-white font-bold text-sm"
                 />
                 <span className="text-[11px] text-[#54C3BB] mt-1 block">
-                  Equivalente en COP: ${((withdrawTokens || 0) * 1000).toLocaleString('es-CO')} COP
+                  Equivalente en COP: ${((withdrawTokens || 0)).toLocaleString('es-CO')} COP (1 $DT = $1 COP)
                 </span>
               </div>
 

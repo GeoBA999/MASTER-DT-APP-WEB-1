@@ -199,7 +199,7 @@ export const RulesView: React.FC = () => {
 
               <div className="p-3.5 rounded-xl bg-[#071410] border border-[#143426]">
                 <span className="text-gray-400 block text-[10px] uppercase">Presupuesto Virtual</span>
-                <span className="text-base font-bold text-[#E6BE55]">$100.0M</span>
+                <span className="text-base font-bold text-[#E6BE55]">$120.0M</span>
                 <span className="text-[11px] text-gray-400 block mt-1">Moneda del juego (no tokens)</span>
               </div>
 
@@ -654,7 +654,7 @@ export const RulesView: React.FC = () => {
                   <span>3. Condición de Victoria y Reglas Salariales</span>
                 </div>
                 <p className="text-xs text-gray-300">
-                  Aplica el mismo presupuesto de $100.0M y máximo 3 jugadores por club. <strong>Gana quien MENOS puntos totales obtenga</strong> entre futbolistas que cumplieron su condición de titular completo. Tarjetas (-1/-3), penales fallados (-2), autogoles (-2) y goles recibidos te ayudan a ganar.
+                  Aplica el mismo presupuesto de $120.0M y máximo 3 jugadores por club. <strong>Gana quien MENOS puntos totales obtenga</strong> entre futbolistas que cumplieron su condición de titular completo. Tarjetas (-1/-3), penales fallados (-2), autogoles (-2) y goles recibidos te ayudan a ganar.
                 </p>
               </div>
             </div>

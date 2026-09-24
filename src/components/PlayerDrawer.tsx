@@ -19,7 +19,7 @@ export const PlayerDrawer: React.FC<PlayerDrawerProps> = ({
   allPlayers,
   currentSlots,
   onSelectPlayer,
-  maxBudget = 100.0,
+  maxBudget = 120.0,
 }) => {
   if (!isOpen || !targetSlot) return null;
 
@@ -95,7 +95,7 @@ export const PlayerDrawer: React.FC<PlayerDrawerProps> = ({
               </h2>
             </div>
             <p className="text-xs text-gray-400 font-mono mt-0.5">
-              Presupuesto Disponible: <strong className="text-[#C9F04D]">${remainingBudget.toFixed(1)}M COP</strong>
+              Presupuesto Disponible: <strong className="text-[#C9F04D]">${remainingBudget.toFixed(1)}M USD</strong>
             </p>
           </div>
           <button
@@ -208,7 +208,7 @@ export const PlayerDrawer: React.FC<PlayerDrawerProps> = ({
                   <div className="flex items-center gap-2.5">
                     <div className="text-right font-mono">
                       <span className={`block font-bold text-sm ${exceedsBudget ? 'text-[#FF7A59]' : 'text-[#E6BE55]'}`}>
-                        ${player.price.toFixed(1)}M
+                        ${player.price.toFixed(1)}M USD
                       </span>
                       <span className="text-[10px] text-gray-400">
                         {currentClubCount}/3 club

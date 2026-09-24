@@ -23,13 +23,26 @@ import { TournamentCategory, SelectedLeagueInfo, UserDTProfile } from '../types'
 
 export const AVAILABLE_LEAGUES: SelectedLeagueInfo[] = [
   {
-    id: 'league-betplay-10',
-    name: 'Liga BetPlay Dimayor 2026',
+    id: 'leg-freemium-betplay',
+    name: 'Liga BetPlay Freemium Bienvenida',
     category: 'LIGA_BETPLAY',
-    description: 'Torneo Oficial del Fútbol Colombiano • Fecha 10. Rake oficial 9%.',
-    prizePoolCOP: 15000000,
-    entryTokens: 15,
-    entryFeeCOP: 15000,
+    description: '¡Entrada con tus 10 Tokens DT de regalo de bienvenida! Juega gratis por 500 $DT garantizados.',
+    prizePoolCOP: 500000,
+    entryTokens: 10,
+    entryFeeCOP: 10000,
+    deadlineText: 'Cierre en 02h 45m',
+    badge: '🎁',
+    tag: 'FREEMIUM REGALO',
+    isWorstXI: false,
+  },
+  {
+    id: 'league-betplay-10',
+    name: 'Duelos Cafeteros BetPlay Pro',
+    category: 'LIGA_BETPLAY',
+    description: 'Torneo Oficial del Fútbol Colombiano • Fecha 10 Dimayor. Rake oficial 9%.',
+    prizePoolCOP: 2500000,
+    entryTokens: 50,
+    entryFeeCOP: 50000,
     deadlineText: 'Cierre en 02h 45m',
     badge: '🇨🇴',
     tag: 'OFICIAL FPC',
@@ -37,12 +50,12 @@ export const AVAILABLE_LEAGUES: SelectedLeagueInfo[] = [
   },
   {
     id: 'league-libertadores',
-    name: 'Copa Conmebol Libertadores',
+    name: 'Gladiadores de América Libertadores',
     category: 'LIBERTADORES',
     description: 'Fase de Grupos • Multiplicador Regional 1.5x a futbolistas colombianos. Rake 9%.',
-    prizePoolCOP: 25000000,
-    entryTokens: 25,
-    entryFeeCOP: 25000,
+    prizePoolCOP: 2400000,
+    entryTokens: 40,
+    entryFeeCOP: 40000,
     deadlineText: 'Cierre hoy 19:30',
     badge: '🏆',
     tag: 'CONTINENTAL',
@@ -50,12 +63,12 @@ export const AVAILABLE_LEAGUES: SelectedLeagueInfo[] = [
   },
   {
     id: 'league-suramericana',
-    name: 'Copa Conmebol Suramericana',
+    name: 'Orgullo Conmebol Gran Suramericana',
     category: 'SURAMERICANA',
     description: 'Fase Preliminar • La otra mitad de la gloria sudamericana. Rake 9%.',
-    prizePoolCOP: 12000000,
-    entryTokens: 15,
-    entryFeeCOP: 15000,
+    prizePoolCOP: 1200000,
+    entryTokens: 20,
+    entryFeeCOP: 20000,
     deadlineText: 'Cierre mañana 18:00',
     badge: '🌎',
     tag: 'SUDAMÉRICA',
@@ -63,12 +76,12 @@ export const AVAILABLE_LEAGUES: SelectedLeagueInfo[] = [
   },
   {
     id: 'league-champions',
-    name: 'UEFA Champions League',
+    name: 'Noches Mágicas UEFA Champions',
     category: 'CHAMPIONS',
     description: 'Fase de Liga UEFA • Los mejores clubes del mundo en acción. Rake 9%.',
-    prizePoolCOP: 35000000,
-    entryTokens: 35,
-    entryFeeCOP: 35000,
+    prizePoolCOP: 3500000,
+    entryTokens: 50,
+    entryFeeCOP: 50000,
     deadlineText: 'Cierre Martes 14:00',
     badge: '⭐',
     tag: 'ELITE EUROPEA',
@@ -76,12 +89,12 @@ export const AVAILABLE_LEAGUES: SelectedLeagueInfo[] = [
   },
   {
     id: 'league-laliga',
-    name: 'LaLiga EA Sports (España)',
-    category: 'LIGA_BETPLAY', // Fallback display category
+    name: 'Furia Ibérica LaLiga Stars',
+    category: 'LALIGA',
     description: 'Jornada Española • Real Madrid, Barcelona, Atlético y más. Rake 9%.',
-    prizePoolCOP: 20000000,
-    entryTokens: 20,
-    entryFeeCOP: 200000,
+    prizePoolCOP: 1500000,
+    entryTokens: 25,
+    entryFeeCOP: 25000,
     deadlineText: 'Cierre Sábado 09:00',
     badge: '🇪🇸',
     tag: 'ESPAÑA',
@@ -89,10 +102,10 @@ export const AVAILABLE_LEAGUES: SelectedLeagueInfo[] = [
   },
   {
     id: 'league-premier',
-    name: 'Premiere League (Inglaterra)',
-    category: 'LIGA_BETPLAY',
+    name: 'Batalla de Titanes Premier League',
+    category: 'PREMIER_LEAGUE',
     description: 'El fútbol más rápido y disputado de Europa. Rake 9%.',
-    prizePoolCOP: 30000000,
+    prizePoolCOP: 1800000,
     entryTokens: 30,
     entryFeeCOP: 30000,
     deadlineText: 'Cierre Sábado 06:30',
@@ -102,12 +115,12 @@ export const AVAILABLE_LEAGUES: SelectedLeagueInfo[] = [
   },
   {
     id: 'league-calcio',
-    name: 'Serie A Calcio (Italia)',
-    category: 'LIGA_BETPLAY',
+    name: 'Derby Della Madonnina Serie A Calcio',
+    category: 'CALCIO',
     description: 'Táctica, rigor defensivo y delanteros implacables. Rake 9%.',
-    prizePoolCOP: 16000000,
-    entryTokens: 15,
-    entryFeeCOP: 15000,
+    prizePoolCOP: 1600000,
+    entryTokens: 25,
+    entryFeeCOP: 25000,
     deadlineText: 'Cierre Domingo 08:00',
     badge: '🇮🇹',
     tag: 'CALCIO',
@@ -115,12 +128,12 @@ export const AVAILABLE_LEAGUES: SelectedLeagueInfo[] = [
   },
   {
     id: 'league-bundesliga',
-    name: 'Bundesliga Alemana',
-    category: 'LIGA_BETPLAY',
+    name: 'Muralla Teutónica Bundesliga Máster',
+    category: 'BUNDESLIGA',
     description: 'Goles por doquier y estadios colmados en Alemania. Rake 9%.',
-    prizePoolCOP: 14000000,
-    entryTokens: 15,
-    entryFeeCOP: 15000,
+    prizePoolCOP: 1400000,
+    entryTokens: 20,
+    entryFeeCOP: 20000,
     deadlineText: 'Cierre Sábado 08:30',
     badge: '🇩🇪',
     tag: 'ALEMANIA',
@@ -131,7 +144,7 @@ export const AVAILABLE_LEAGUES: SelectedLeagueInfo[] = [
     name: 'El Peor Once (Anti-Fantasy)',
     category: 'LIGA_BETPLAY',
     description: '¡Gana el DT con MENOS puntos! Solo titulares confirmados (Regla Anti-Exploit).',
-    prizePoolCOP: 4000000,
+    prizePoolCOP: 400000,
     entryTokens: 10,
     entryFeeCOP: 10000,
     deadlineText: 'Cierre en 02h 45m',
@@ -341,7 +354,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
               <span className="font-display font-black text-sm text-[#E6BE55]">DT</span>
             </div>
             <div>
-              <h2 className="font-display text-lg font-black tracking-wide text-white uppercase leading-none">
+              <h2 className="font-display text-base sm:text-lg font-black tracking-wide text-white uppercase leading-none whitespace-nowrap">
                 MASTER <span className="text-[#C9F04D]">DT</span>
               </h2>
               <span className="text-[10px] text-gray-400 font-mono">
@@ -886,13 +899,13 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
                         <div>
                           <span className="text-gray-400 block text-[10px]">Bolsa de Premios:</span>
                           <span className="text-[#E6BE55] font-bold text-sm">
-                            ${league.prizePoolCOP.toLocaleString('es-CO')} COP
+                            {(league.prizePoolCOP / 1000).toLocaleString('es-CO')} $DT
                           </span>
                         </div>
                         <div className="text-center">
                           <span className="text-gray-400 block text-[10px]">Entrada:</span>
                           <span className="text-[#54C3BB] font-bold">
-                            {league.entryTokens} DT Tokens
+                            {league.entryTokens} $DT
                           </span>
                         </div>
                         <div className="text-right">

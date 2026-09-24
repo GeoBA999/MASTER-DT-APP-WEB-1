@@ -4,12 +4,12 @@ import { SquadPlayerSlot } from '../types';
 
 interface BudgetTrackerBarProps {
   slots: SquadPlayerSlot[];
-  maxBudget?: number; // 100M COP default
+  maxBudget?: number; // 120.0M USD default
 }
 
 export const BudgetTrackerBar: React.FC<BudgetTrackerBarProps> = ({
   slots,
-  maxBudget = 100.0,
+  maxBudget = 120.0,
 }) => {
   // Calculate total spent
   const filledSlots = slots.filter((s) => s.player !== null);
@@ -49,10 +49,10 @@ export const BudgetTrackerBar: React.FC<BudgetTrackerBarProps> = ({
                   isOverBudget ? 'text-[#FF7A59]' : 'text-[#C9F04D]'
                 }`}
               >
-                ${remainingBudget.toFixed(1)}M
+                ${remainingBudget.toFixed(1)}M USD
               </span>
               <span className="text-xs text-gray-400 font-mono">
-                / ${maxBudget.toFixed(1)}M COP
+                / ${maxBudget.toFixed(1)}M USD
               </span>
             </div>
           </div>
@@ -64,7 +64,7 @@ export const BudgetTrackerBar: React.FC<BudgetTrackerBarProps> = ({
               Gastado
             </span>
             <span className="font-mono text-base font-semibold text-white">
-              ${totalSpent.toFixed(1)}M COP
+              ${totalSpent.toFixed(1)}M USD
             </span>
           </div>
 
@@ -74,7 +74,7 @@ export const BudgetTrackerBar: React.FC<BudgetTrackerBarProps> = ({
                 Prom. por cupo libre
               </span>
               <span className="font-mono text-base font-semibold text-[#54C3BB]">
-                ${avgPerEmptySlot > 0 ? avgPerEmptySlot.toFixed(1) : '0.0'}M
+                ${avgPerEmptySlot > 0 ? avgPerEmptySlot.toFixed(1) : '0.0'}M USD
               </span>
             </div>
           )}
@@ -123,7 +123,7 @@ export const BudgetTrackerBar: React.FC<BudgetTrackerBarProps> = ({
         {isOverBudget ? (
           <div className="flex items-center gap-1.5 text-[#FF7A59] font-medium">
             <AlertTriangle className="w-4 h-4 shrink-0" />
-            <span>Presupuesto excedido por ${(Math.abs(remainingBudget)).toFixed(1)}M COP. Vende jugadores para validar tu alineación.</span>
+            <span>Presupuesto excedido por ${(Math.abs(remainingBudget)).toFixed(1)}M USD. Vende jugadores para validar tu alineación.</span>
           </div>
         ) : hasClubViolation ? (
           <div className="flex items-center gap-1.5 text-[#FF7A59] font-medium">
@@ -135,7 +135,7 @@ export const BudgetTrackerBar: React.FC<BudgetTrackerBarProps> = ({
         ) : (
           <div className="flex items-center gap-1.5 text-gray-400">
             <CheckCircle2 className="w-3.5 h-3.5 text-[#7AC492]" />
-            <span>Reglas vigentes: 100M COP máx, 15 jugadores (11 titulares + 4 suplentes).</span>
+            <span>Reglas vigentes: $120.0M USD máx, 15 jugadores (11 titulares + 4 suplentes).</span>
           </div>
         )}
 

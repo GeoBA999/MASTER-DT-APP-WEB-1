@@ -244,3 +244,60 @@ export interface LeagueSquadData {
     regional_wildcard: boolean;
   };
 }
+
+export interface MatchdayHistoricalPerformance {
+  matchday: number;
+  label: string; // 'J1', 'J2', 'J3', 'J4', 'J5'
+  opponent: string;
+  isHome: boolean;
+  points: number;
+  minutesPlayed: number;
+  goals: number;
+  assists: number;
+  cleanSheet: boolean;
+  rating: number; // e.g., 7.8
+  saves?: number;
+  recoveries: number;
+  yellowCards: number;
+  xG: number;
+  xA: number;
+}
+
+export interface PlayerHistoricalData {
+  player: Player;
+  history: MatchdayHistoricalPerformance[];
+  averagePoints: number;
+  totalPointsLast5: number;
+  pointsPerMillion: number;
+  consistencyScore: number; // 0-100 (inverse of std dev)
+  trend: 'up' | 'down' | 'stable';
+  bestMatchday: { matchday: number; points: number; opponent: string };
+  radarMetrics: {
+    attacking: number;   // 0-100
+    defending: number;   // 0-100
+    consistency: number; // 0-100
+    form: number;        // 0-100
+    efficiency: number;  // 0-100
+    influence: number;   // 0-100
+  };
+}
+
+export interface SquadAnalyticsSummary {
+  matchdays: {
+    matchday: number;
+    label: string;
+    totalStarterPoints: number;
+    totalSquadPoints: number;
+    averageRating: number;
+  }[];
+  totalPointsLast5: number;
+  averagePerMatchday: number;
+  topPerformer: PlayerHistoricalData | null;
+  bestValuePlayer: PlayerHistoricalData | null;
+  mostConsistentPlayer: PlayerHistoricalData | null;
+  positionalBreakdown: {
+    position: PlayerPosition;
+    totalPoints: number;
+    sharePercentage: number;
+  }[];
+}

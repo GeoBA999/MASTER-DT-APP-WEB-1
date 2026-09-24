@@ -25,7 +25,7 @@ import {
   Formation,
 } from '../types';
 import { INITIAL_PRIVATE_LEAGUES, INITIAL_VIP_TOURNAMENTS } from '../data/mockFootballData';
-import { formatCOP } from '../utils/scoring';
+import { formatTokens, formatCOP } from '../utils/scoring';
 
 interface GameModesViewProps {
   userTokens: number;
@@ -147,7 +147,7 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
                   Ligas Privadas por Niveles (Reset en Cada Fecha)
                 </h3>
                 <p className="text-xs text-gray-400 mt-1">
-                  Sin desgaste de temporada completa. Compite con buy-ins en pesos colombianos y comisiones competitivas de rake (9% a 6%).
+                  Sin desgaste de temporada completa. Compite con buy-ins en tokens $DT y comisiones competitivas de rake (9% a 6%).
                 </p>
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#0F2319] border border-[#E6BE55]/30 text-xs text-[#E6BE55] font-mono shrink-0">
@@ -167,21 +167,41 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
                 4: 'bg-[#FF7A59]/20 text-[#FF7A59] border-[#FF7A59]/40',
               };
 
+              const buyInInTokens = Math.max(1, Math.round(league.buyInCOP / 1000));
+              const prizePoolInTokens = Math.round(league.prizePoolCOP / 1000);
+
+              const isFreemium = league.id === 'leg-freemium-betplay';
+
               return (
                 <div
                   key={league.id}
-                  className="bg-[#0C1D16] border border-[#143426] hover:border-[#22503B] rounded-2xl p-4 shadow-lg flex flex-col justify-between transition"
+                  className={`border rounded-2xl p-4 shadow-lg flex flex-col justify-between transition ${
+                    isFreemium
+                      ? 'bg-gradient-to-b from-[#11291F] to-[#0C1D16] border-[#C9F04D]/60 ring-1 ring-[#C9F04D]/30'
+                      : 'bg-[#0C1D16]/60 border-[#143426]/50 opacity-70 hover:opacity-90'
+                  }`}
                 >
                   <div>
                     {/* Header with Level Badge */}
                     <div className="flex items-center justify-between gap-2 mb-2">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold border ${
-                          levelBadgeColors[league.level]
-                        }`}
-                      >
-                        Nivel {league.level} ({league.rakePercentage}% Rake)
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {isFreemium ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-black bg-[#C9F04D] text-[#071410] flex items-center gap-1 shadow-sm">
+                            <Sparkles className="w-3 h-3" /> FREEMIUM (TOKENS REGALO)
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-gray-800 text-gray-400 border border-gray-700">
+                            DESACTIVADA EN BETA
+                          </span>
+                        )}
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold border ${
+                            levelBadgeColors[league.level]
+                          }`}
+                        >
+                          Nivel {league.level} ({league.rakePercentage}% Rake)
+                        </span>
+                      </div>
                       <span className="text-[11px] font-mono text-gray-400">
                         {league.fixtureName}
                       </span>
@@ -196,13 +216,13 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
                       <div>
                         <span className="text-[10px] text-gray-400 block uppercase">Buy-in</span>
                         <span className="text-sm font-bold text-white">
-                          {formatCOP(league.buyInCOP)}
+                          {formatTokens(buyInInTokens)}
                         </span>
                       </div>
                       <div>
                         <span className="text-[10px] text-gray-400 block uppercase">Pozo Premios</span>
                         <span className="text-sm font-bold text-[#E6BE55]">
-                          {formatCOP(league.prizePoolCOP)}
+                          {formatTokens(prizePoolInTokens)}
                         </span>
                       </div>
                       <div>
@@ -240,7 +260,7 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
                               <span className="text-[#C9F04D] font-bold">{item.points} pts</span>
                               {item.prizeCOP && (
                                 <span className="text-[#E6BE55] text-[10px]">
-                                  {formatCOP(item.prizeCOP)}
+                                  {formatTokens(Math.round(item.prizeCOP / 1000))}
                                 </span>
                               )}
                             </div>
@@ -264,7 +284,7 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Inscrito • Ver Mi Once</span>
                       </button>
-                    ) : (
+                    ) : isFreemium ? (
                       <button
                         type="button"
                         onClick={() =>
@@ -274,17 +294,26 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
                             category: 'LIGA_BETPLAY',
                             description: `${league.fixtureName} • Rake: ${league.rakePercentage}%`,
                             prizePoolCOP: league.prizePoolCOP,
-                            entryTokens: Math.max(1, Math.round(league.buyInCOP / 1000)),
+                            entryTokens: buyInInTokens,
                             entryFeeCOP: league.buyInCOP,
                             deadlineText: 'Cierre antes del primer partido',
-                            badge: '🇨🇴',
-                            tag: `NIVEL ${league.level}`,
+                            badge: '🎁',
+                            tag: 'FREEMIUM BIENVENIDA',
                             isWorstXI: false,
                           })
                         }
-                        className="px-4 py-2 rounded-xl bg-[#E6BE55] hover:bg-[#F2CE6E] text-[#071410] font-bold text-xs font-mono shadow transition cursor-pointer active:scale-95"
+                        className="px-4 py-2 rounded-xl bg-[#C9F04D] hover:bg-[#b8de3f] text-[#071410] font-bold text-xs font-mono shadow transition cursor-pointer active:scale-95"
                       >
-                        Inscribirse ({formatCOP(league.buyInCOP)})
+                        Inscribirse (10 DT Gratis)
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={true}
+                        title="Liga no disponible en versión BETA Freemium"
+                        className="px-3.5 py-1.5 rounded-xl bg-gray-800/80 text-gray-500 font-mono text-xs border border-gray-700 cursor-not-allowed"
+                      >
+                        Inactiva en BETA
                       </button>
                     )}
                   </div>
@@ -308,7 +337,7 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
                   Modo Invertido
                 </span>
                 <span className="text-xs font-mono text-[#E6BE55]">
-                  Pozo Garantizado: $2.500.000 COP
+                  Pozo Garantizado: 2.500 $DT
                 </span>
               </div>
               <h3 className="font-display text-2xl font-black text-white tracking-wide mt-1">
@@ -357,7 +386,7 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
             <div className="p-3 rounded-xl bg-[#0F2319] border border-[#143426]">
               <span className="text-[#54C3BB] font-bold block mb-1">Condiciones de Entrada</span>
               <ul className="space-y-1 text-gray-400 text-[11px]">
-                <li>• Buy-in: $150.000 COP</li>
+                <li>• Buy-in: 150 $DT</li>
                 <li>• Rake: 7%</li>
                 <li>• Formato: 11 Titulares + 4 Banca</li>
                 <li>• Criterio: Menor puntuación total</li>
@@ -369,7 +398,7 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
             <span className="text-xs text-gray-400">
               {joinedLeagueIds.includes('peor-once-fpc')
                 ? 'Ya estás inscrito en El Peor Once. Puedes gestionar su alineación independiente en Mi Once.'
-                : 'Inscríbete y configura tu peor once para competir por el pozo de $2.500.000 COP.'}
+                : 'Modalidad El Peor Once desactivada en esta prueba BETA. Solo está activa la Liga BetPlay Freemium Bienvenida.'}
             </span>
             {joinedLeagueIds.includes('peor-once-fpc') ? (
               <button
@@ -383,24 +412,11 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
             ) : (
               <button
                 type="button"
-                onClick={() =>
-                  handleOpenEnroll({
-                    id: 'peor-once-fpc',
-                    name: 'El Peor Once (Anti-Fantasy FPC)',
-                    category: 'LIGA_BETPLAY',
-                    description: 'Modalidad invertida oficial • Rake: 7%',
-                    prizePoolCOP: 2500000,
-                    entryTokens: 150,
-                    entryFeeCOP: 150000,
-                    deadlineText: 'Cierre Fecha 10',
-                    badge: '📉',
-                    tag: 'MODO INVERTIDO',
-                    isWorstXI: true,
-                  })
-                }
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold text-sm font-mono bg-[#FF7A59] hover:bg-[#FF8F73] text-white active:scale-95 transition cursor-pointer shadow-lg"
+                disabled={true}
+                title="Desactivado en versión BETA Freemium"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold text-sm font-mono bg-gray-800 text-gray-500 border border-gray-700 cursor-not-allowed"
               >
-                Inscribirse al Peor Once ($150.000 COP)
+                Inactivo en BETA (Solo Freemium)
               </button>
             )}
           </div>
@@ -456,13 +472,13 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
                     <div className="my-3 p-2.5 rounded-xl bg-[#071410] border border-[#143426] space-y-1 font-mono text-xs">
                       <div className="flex justify-between">
                         <span className="text-gray-400">Buy-in:</span>
-                        <span className="text-white font-bold">{formatCOP(tourney.buyInCOP)}</span>
+                        <span className="text-white font-bold">{formatTokens(Math.max(1, Math.round(tourney.buyInCOP / 1000)))}</span>
                       </div>
                       {tourney.guaranteedPrizeCOP && (
                         <div className="flex justify-between">
                           <span className="text-gray-400">Pozo GTD:</span>
                           <span className="text-[#E6BE55] font-bold">
-                            {formatCOP(tourney.guaranteedPrizeCOP)}
+                            {formatTokens(Math.round(tourney.guaranteedPrizeCOP / 1000))}
                           </span>
                         </div>
                       )}
@@ -491,24 +507,11 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
                   ) : (
                     <button
                       type="button"
-                      onClick={() =>
-                        handleOpenEnroll({
-                          id: tourney.id,
-                          name: tourney.title,
-                          category: 'LIGA_BETPLAY',
-                          description: tourney.description,
-                          prizePoolCOP: tourney.guaranteedPrizeCOP || tourney.buyInCOP * tourney.maxParticipants,
-                          entryTokens: Math.max(1, Math.round(tourney.buyInCOP / 1000)),
-                          entryFeeCOP: tourney.buyInCOP,
-                          deadlineText: 'Cierre de inscripciones VIP',
-                          badge: '🏆',
-                          tag: 'VIP MASTER',
-                          isWorstXI: tourney.type === 'worst_xi',
-                        })
-                      }
-                      className="w-full py-2.5 rounded-xl bg-[#54C3BB] hover:bg-[#68D8D0] text-[#071410] font-bold text-xs font-mono transition cursor-pointer active:scale-95"
+                      disabled={true}
+                      title="Torneo VIP no disponible en versión BETA Freemium"
+                      className="w-full py-2.5 rounded-xl bg-gray-800 text-gray-500 font-bold text-xs font-mono border border-gray-700 cursor-not-allowed"
                     >
-                      Unirse al Torneo ({formatCOP(tourney.buyInCOP)})
+                      Inactivo en BETA (Solo Freemium)
                     </button>
                   )}
                 </div>
@@ -531,8 +534,11 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
                   <h3 className="font-display text-lg sm:text-xl font-black text-white tracking-wide">
                     Inscripción a {enrollTarget.name}
                   </h3>
-                  <span className="text-[11px] font-mono text-[#E6BE55]">
-                    Pozo: {formatCOP(enrollTarget.prizePoolCOP)} • Entrada: {formatCOP(enrollTarget.entryFeeCOP)}
+                  <span className="text-[11px] font-mono text-[#E6BE55] block">
+                    Pozo: {formatTokens(Math.round(enrollTarget.prizePoolCOP / 1000))} • Entrada: {formatTokens(enrollTarget.entryTokens)}
+                  </span>
+                  <span className="text-[10px] font-mono text-gray-300 block">
+                    Tu Saldo: <strong className="text-[#C9F04D]">{formatTokens(userTokens)}</strong>
                   </span>
                 </div>
               </div>
@@ -662,7 +668,7 @@ export const GameModesView: React.FC<GameModesViewProps> = ({
                     ⚡ Autocompletar Plantilla Balanceada
                   </span>
                   <span className="text-[11px] text-gray-400 block mt-0.5">
-                    Llena inmediatamente los 15 cupos con futbolistas recomendados dentro del límite salarial de $100.0M.
+                    Llena inmediatamente los 15 cupos con futbolistas recomendados dentro del límite salarial de 120.0M USD.
                   </span>
                 </div>
               </div>

@@ -1083,32 +1083,100 @@ export const INITIAL_PLAYERS: Player[] = [
 
 export const INITIAL_PRIVATE_LEAGUES: PrivateLeague[] = [
   {
-    id: 'leg-1',
-    name: 'Liga BetPlay Clásicos',
+    id: 'leg-freemium-betplay',
+    name: 'Liga BetPlay Freemium Bienvenida',
     level: 1,
-    buyInCOP: 200000,
+    buyInCOP: 10000, // 10 $DT Tokens regalados
+    rakePercentage: 0,
+    prizePoolCOP: 500000, // 500 $DT Tokens garantizados
+    currentParticipants: 38,
+    maxParticipants: 100,
+    tournament: 'LIGA_BETPLAY',
+    fixtureName: 'Fecha 10 - Clausura Dimayor',
+    status: 'live',
+    leaderboard: [
+      { rank: 1, userId: 'u101', userName: 'Carlos Paisa', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80', teamName: 'Verdolaga DT', points: 74, squadCost: 98.5, prizeCOP: 250000 },
+      { rank: 2, userId: 'u102', userName: 'Andrés R.', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80', teamName: 'Millos Campeón', points: 71, squadCost: 99.2, prizeCOP: 150000 },
+      { rank: 3, userId: 'u103', userName: 'Felipe Gómez', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80', teamName: 'Tiburón Rojo', points: 68, squadCost: 97.0, prizeCOP: 100000 },
+      { rank: 4, userId: 'user-me', userName: 'Mi Equipo DT', avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=80', teamName: 'Master Once Caldas', points: 65, squadCost: 96.8 },
+      { rank: 5, userId: 'u105', userName: 'Mateo Osorio', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=80', teamName: 'Poderoso DIM', points: 61, squadCost: 99.5 },
+    ],
+  },
+  {
+    id: 'leg-1',
+    name: 'Duelos Cafeteros BetPlay Pro',
+    level: 1,
+    buyInCOP: 50000, // 50 $DT
     rakePercentage: 9,
-    prizePoolCOP: 3640000, // 20 * 200k = 4M - 9% (360k) = 3.64M
+    prizePoolCOP: 2500000, // 2,500 $DT
     currentParticipants: 20,
     maxParticipants: 24,
     tournament: 'LIGA_BETPLAY',
     fixtureName: 'Fecha 10 - Clausura',
     status: 'live',
     leaderboard: [
-      { rank: 1, userId: 'u101', userName: 'Carlos Paisa', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80', teamName: 'Verdolaga DT', points: 74, squadCost: 98.5, prizeCOP: 1820000 },
-      { rank: 2, userId: 'u102', userName: 'Andrés R.', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80', teamName: 'Millos Campeón', points: 71, squadCost: 99.2, prizeCOP: 1092000 },
-      { rank: 3, userId: 'u103', userName: 'Felipe Gómez', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80', teamName: 'Tiburón Rojo', points: 68, squadCost: 97.0, prizeCOP: 728000 },
+      { rank: 1, userId: 'u101', userName: 'Carlos Paisa', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80', teamName: 'Verdolaga DT', points: 74, squadCost: 98.5, prizeCOP: 1250000 },
+      { rank: 2, userId: 'u102', userName: 'Andrés R.', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80', teamName: 'Millos Campeón', points: 71, squadCost: 99.2, prizeCOP: 750000 },
+      { rank: 3, userId: 'u103', userName: 'Felipe Gómez', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80', teamName: 'Tiburón Rojo', points: 68, squadCost: 97.0, prizeCOP: 500000 },
       { rank: 4, userId: 'user-me', userName: 'Mi Equipo DT', avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=80', teamName: 'Master Once Caldas', points: 65, squadCost: 96.8 },
       { rank: 5, userId: 'u105', userName: 'Mateo Osorio', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=80', teamName: 'Poderoso DIM', points: 61, squadCost: 99.5 },
     ],
   },
   {
-    id: 'leg-libertadores',
-    name: 'Copa Libertadores Master',
+    id: 'leg-premier',
+    name: 'Batalla de Titanes Premier League',
     level: 2,
-    buyInCOP: 500000,
+    buyInCOP: 30000, // 30 $DT
     rakePercentage: 9,
-    prizePoolCOP: 6825000, // 15 * 500k = 7.5M - 9% = 6.825M
+    prizePoolCOP: 1800000, // 1,800 $DT
+    currentParticipants: 14,
+    maxParticipants: 20,
+    tournament: 'PREMIER_LEAGUE',
+    fixtureName: 'Matchday 9 - Londres & Manchester',
+    status: 'open',
+    leaderboard: [
+      { rank: 1, userId: 'u501', userName: 'Gabriel Silva', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80', teamName: 'Anfield Kings', points: 0, squadCost: 98.6 },
+    ],
+  },
+  {
+    id: 'leg-laliga',
+    name: 'Furia Ibérica LaLiga Stars',
+    level: 1,
+    buyInCOP: 25000, // 25 $DT
+    rakePercentage: 9,
+    prizePoolCOP: 1500000, // 1,500 $DT
+    currentParticipants: 16,
+    maxParticipants: 24,
+    tournament: 'LALIGA',
+    fixtureName: 'Jornada 12 - Clásico & Derbi',
+    status: 'open',
+    leaderboard: [
+      { rank: 1, userId: 'u402', userName: 'Alfonso Rivas', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80', teamName: 'Madridistas DT', points: 0, squadCost: 99.1 },
+    ],
+  },
+  {
+    id: 'leg-champions',
+    name: 'Noches Mágicas UEFA Champions',
+    level: 3,
+    buyInCOP: 50000, // 50 $DT
+    rakePercentage: 9,
+    prizePoolCOP: 3500000, // 3,500 $DT
+    currentParticipants: 10,
+    maxParticipants: 16,
+    tournament: 'CHAMPIONS',
+    fixtureName: 'Fase de Liga - Fecha 3',
+    status: 'open',
+    leaderboard: [
+      { rank: 1, userId: 'u301', userName: 'Daniela Cardona', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80', teamName: 'Cafeteros Top', points: 0, squadCost: 97.5 },
+    ],
+  },
+  {
+    id: 'leg-libertadores',
+    name: 'Gladiadores de América Libertadores',
+    level: 2,
+    buyInCOP: 40000, // 40 $DT
+    rakePercentage: 9,
+    prizePoolCOP: 2400000, // 2,400 $DT
     currentParticipants: 15,
     maxParticipants: 20,
     tournament: 'LIBERTADORES',
@@ -1121,11 +1189,11 @@ export const INITIAL_PRIVATE_LEAGUES: PrivateLeague[] = [
   },
   {
     id: 'leg-suramericana',
-    name: 'Copa Suramericana Élite',
+    name: 'Orgullo Conmebol Gran Suramericana',
     level: 1,
-    buyInCOP: 200000,
+    buyInCOP: 20000, // 20 $DT
     rakePercentage: 9,
-    prizePoolCOP: 3640000, // 20 * 200k = 4M - 9% = 3.64M
+    prizePoolCOP: 1200000, // 1,200 $DT
     currentParticipants: 12,
     maxParticipants: 25,
     tournament: 'SURAMERICANA',
@@ -1136,60 +1204,12 @@ export const INITIAL_PRIVATE_LEAGUES: PrivateLeague[] = [
     ],
   },
   {
-    id: 'leg-champions',
-    name: 'UEFA Champions League VIP',
-    level: 3,
-    buyInCOP: 1000000,
-    rakePercentage: 9,
-    prizePoolCOP: 9100000, // 10 * 1M = 10M - 9% = 9.1M
-    currentParticipants: 10,
-    maxParticipants: 12,
-    tournament: 'CHAMPIONS',
-    fixtureName: 'Fase de Liga - Fecha 3',
-    status: 'open',
-    leaderboard: [
-      { rank: 1, userId: 'u301', userName: 'Daniela Cardona', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80', teamName: 'Cafeteros Top', points: 0, squadCost: 97.5 },
-    ],
-  },
-  {
-    id: 'leg-laliga',
-    name: 'LaLiga EA Sports Stars',
-    level: 1,
-    buyInCOP: 200000,
-    rakePercentage: 9,
-    prizePoolCOP: 3640000,
-    currentParticipants: 16,
-    maxParticipants: 24,
-    tournament: 'LALIGA',
-    fixtureName: 'Jornada 12',
-    status: 'open',
-    leaderboard: [
-      { rank: 1, userId: 'u402', userName: 'Alfonso Rivas', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80', teamName: 'Madridistas DT', points: 0, squadCost: 99.1 },
-    ],
-  },
-  {
-    id: 'leg-premier',
-    name: 'Premiere League Masters',
-    level: 2,
-    buyInCOP: 500000,
-    rakePercentage: 9,
-    prizePoolCOP: 6825000,
-    currentParticipants: 14,
-    maxParticipants: 20,
-    tournament: 'PREMIER_LEAGUE',
-    fixtureName: 'Matchday 9',
-    status: 'open',
-    leaderboard: [
-      { rank: 1, userId: 'u501', userName: 'Gabriel Silva', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80', teamName: 'Anfield Kings', points: 0, squadCost: 98.6 },
-    ],
-  },
-  {
     id: 'leg-calcio',
-    name: 'Serie A Calcio Élite',
+    name: 'Derby Della Madonnina Serie A Calcio',
     level: 2,
-    buyInCOP: 300000,
+    buyInCOP: 25000, // 25 $DT
     rakePercentage: 9,
-    prizePoolCOP: 4095000, // 15 * 300k = 4.5M - 9% = 4.095M
+    prizePoolCOP: 1600000, // 1,600 $DT
     currentParticipants: 11,
     maxParticipants: 20,
     tournament: 'CALCIO',
@@ -1201,13 +1221,13 @@ export const INITIAL_PRIVATE_LEAGUES: PrivateLeague[] = [
   },
   {
     id: 'leg-bundesliga',
-    name: 'Bundesliga High Roller',
-    level: 4,
-    buyInCOP: 2000000,
+    name: 'Muralla Teutónica Bundesliga Máster',
+    level: 2,
+    buyInCOP: 20000, // 20 $DT
     rakePercentage: 9,
-    prizePoolCOP: 14560000, // 8 * 2M = 16M - 9% = 14.56M
+    prizePoolCOP: 1400000, // 1,400 $DT
     currentParticipants: 8,
-    maxParticipants: 10,
+    maxParticipants: 16,
     tournament: 'BUNDESLIGA',
     fixtureName: 'Spieltag 7',
     status: 'open',
@@ -1273,11 +1293,11 @@ export const INITIAL_VIP_TOURNAMENTS: VIPTournament[] = [
 ];
 
 export const TOKEN_PACKAGES: TokenPackage[] = [
-  { id: 'tier-1', tokens: 10, priceCOP: 9900, badge: 'Inicial' },
-  { id: 'tier-2', tokens: 26, priceCOP: 24900, bonusTokens: 1, badge: 'Popular' },
-  { id: 'tier-3', tokens: 55, priceCOP: 49900, bonusTokens: 5, badge: 'Mejor Valor' },
-  { id: 'tier-4', tokens: 115, priceCOP: 99900, bonusTokens: 15, badge: 'Pro DT' },
-  { id: 'tier-5', tokens: 180, priceCOP: 149900, bonusTokens: 30, badge: 'Master Élite' },
+  { id: 'tier-1', tokens: 10000, priceCOP: 10000, badge: 'Inicial' },
+  { id: 'tier-2', tokens: 25000, priceCOP: 25000, bonusTokens: 1000, badge: 'Popular' },
+  { id: 'tier-3', tokens: 50000, priceCOP: 50000, bonusTokens: 3000, badge: 'Mejor Valor' },
+  { id: 'tier-4', tokens: 100000, priceCOP: 100000, bonusTokens: 10000, badge: 'Pro DT' },
+  { id: 'tier-5', tokens: 200000, priceCOP: 200000, bonusTokens: 25000, badge: 'Master Élite' },
 ];
 
 export const INITIAL_AGENT_TRANSACTIONS: AgentTransaction[] = [

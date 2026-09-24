@@ -44,9 +44,12 @@ import { LiveMatchdayView } from './components/LiveMatchdayView';
 import { WalletView } from './components/WalletView';
 import { AgentPortal } from './components/AgentPortal';
 import { RulesView } from './components/RulesView';
-import { OnboardingFlow } from './components/OnboardingFlow';
+import { BetaAuthModal } from './components/BetaAuthModal';
+import { SquadAnalyticsDashboard } from './components/SquadAnalyticsDashboard';
 import { calculatePlayerScore } from './utils/scoring';
 import { UserDTProfile, TournamentCategory, SelectedLeagueInfo } from './types';
+import { ApiFootballPlayer } from './utils/footballApi';
+import { footballApiClient } from './services/footballApiClient';
 
 export default function App() {
   // User Profile & Onboarding State
@@ -67,20 +70,45 @@ export default function App() {
       return true;
     }
   });
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
   const [onboardingInitialStep, setOnboardingInitialStep] = useState<1 | 2 | 3>(1);
+  const [squadSubView, setSquadSubView] = useState<'pitch' | 'analytics'>('pitch');
+
+  const handleOpenAuth = (mode: 'login' | 'register') => {
+    setActiveTab('leagues'); // "al dar clic en registro o en login debe abrir la pestaña de ligas"
+    setAuthModalMode(mode);
+    setIsOnboardingOpen(true);
+  };
 
   // Tournament Category
   const [tournament, setTournament] = useState<TournamentCategory>(() => {
     return userProfile?.selectedLeague?.category || 'LIGA_BETPLAY';
   });
 
-  // Navigation tabs ('squad' corresponds to "Mi Once")
-  const [activeTab, setActiveTab] = useState<'squad' | 'leagues' | 'rules' | 'live' | 'wallet' | 'agent'>('squad');
+  // Navigation tabs ('squad' corresponds to "Mi Once", default 'leagues' in Beta)
+  const [activeTab, setActiveTab] = useState<'squad' | 'leagues' | 'rules' | 'live' | 'wallet' | 'agent'>('leagues');
 
-  // Joined leagues state
+  // Real player list loaded from API (with MOCK_PLAYERS as fallback)
+  const [allPlayers, setAllPlayers] = useState<Player[]>(MOCK_PLAYERS);
+
+  // Fetch real player data from API on mount
+  React.useEffect(() => {
+    footballApiClient
+      .getAllPlayers()
+      .then((apiPlayers) => {
+        if (apiPlayers && apiPlayers.length > 0) {
+          setAllPlayers(apiPlayers);
+        }
+      })
+      .catch((err) => {
+        console.warn('Could not load players from API, using fallback data', err);
+      });
+  }, []);
+
+  // Joined leagues state (Beta Freemium defaults to Liga BetPlay Freemium Bienvenida)
   const [joinedLeagueIds, setJoinedLeagueIds] = useState<string[]>(() => {
-    const ids = ['leg-1'];
-    if (userProfile?.selectedLeague?.id) {
+    const ids = ['leg-freemium-betplay'];
+    if (userProfile?.selectedLeague?.id && !ids.includes(userProfile.selectedLeague.id)) {
       ids.push(userProfile.selectedLeague.id);
     }
     if (userProfile?.registeredLeagues) {
@@ -91,47 +119,47 @@ export default function App() {
     return ids;
   });
 
+  // Helper to create completely blank slots
+  const createBlankSquadSlots = (form: Formation): SquadPlayerSlot[] => {
+    const config = FORMATION_CONFIGS[form];
+    const result: SquadPlayerSlot[] = [];
+
+    // Starters (11) - completely blank
+    result.push({ slotId: 'starter-por-1', position: 'POR', isStarter: true, player: null });
+    for (let i = 0; i < config.def; i++) {
+      result.push({ slotId: `starter-def-${i + 1}`, position: 'DEF', isStarter: true, player: null });
+    }
+    for (let i = 0; i < config.med; i++) {
+      result.push({ slotId: `starter-med-${i + 1}`, position: 'MED', isStarter: true, player: null });
+    }
+    for (let i = 0; i < config.del; i++) {
+      result.push({ slotId: `starter-del-${i + 1}`, position: 'DEL', isStarter: true, player: null });
+    }
+
+    // Bench (4) - completely blank
+    result.push({ slotId: 'bench-por-1', position: 'POR', isStarter: false, player: null });
+    for (let i = 0; i < 5 - config.def; i++) {
+      result.push({ slotId: `bench-def-${i + 1}`, position: 'DEF', isStarter: false, player: null });
+    }
+    for (let i = 0; i < 5 - config.med; i++) {
+      result.push({ slotId: `bench-med-${i + 1}`, position: 'MED', isStarter: false, player: null });
+    }
+    for (let i = 0; i < 3 - config.del; i++) {
+      result.push({ slotId: `bench-del-${i + 1}`, position: 'DEL', isStarter: false, player: null });
+    }
+
+    return result;
+  };
+
   // Squad State
   const [formation, setFormation] = useState<Formation>('4-3-3');
   const [isWorstXIMode, setIsWorstXIMode] = useState<boolean>(() => {
     return userProfile?.selectedLeague?.isWorstXI || false;
   });
 
-  // Initial Squad population
+  // Initial Squad population - completely blank for new BETA managers
   const [slots, setSlots] = useState<SquadPlayerSlot[]>(() => {
-    const config = FORMATION_CONFIGS['4-3-3'];
-    const pPOR = MOCK_PLAYERS.filter((p) => p.position === 'POR');
-    const pDEF = MOCK_PLAYERS.filter((p) => p.position === 'DEF');
-    const pMED = MOCK_PLAYERS.filter((p) => p.position === 'MED');
-    const pDEL = MOCK_PLAYERS.filter((p) => p.position === 'DEL');
-
-    const result: SquadPlayerSlot[] = [];
-
-    // Starters
-    result.push({ slotId: 'starter-por-1', position: 'POR', isStarter: true, player: pPOR[0] || null });
-    for (let i = 0; i < config.def; i++) {
-      result.push({ slotId: `starter-def-${i + 1}`, position: 'DEF', isStarter: true, player: pDEF[i] || null });
-    }
-    for (let i = 0; i < config.med; i++) {
-      result.push({ slotId: `starter-med-${i + 1}`, position: 'MED', isStarter: true, player: pMED[i] || null });
-    }
-    for (let i = 0; i < config.del; i++) {
-      result.push({ slotId: `starter-del-${i + 1}`, position: 'DEL', isStarter: true, player: pDEL[i] || null });
-    }
-
-    // Bench
-    result.push({ slotId: 'bench-por-1', position: 'POR', isStarter: false, player: pPOR[1] || null });
-    for (let i = 0; i < 5 - config.def; i++) {
-      result.push({ slotId: `bench-def-${i + 1}`, position: 'DEF', isStarter: false, player: pDEF[config.def + i] || null });
-    }
-    for (let i = 0; i < 5 - config.med; i++) {
-      result.push({ slotId: `bench-med-${i + 1}`, position: 'MED', isStarter: false, player: pMED[config.med + i] || null });
-    }
-    for (let i = 0; i < 3 - config.del; i++) {
-      result.push({ slotId: `bench-del-${i + 1}`, position: 'DEL', isStarter: false, player: pDEL[config.del + i] || null });
-    }
-
-    return result;
+    return createBlankSquadSlots('4-3-3');
   });
 
   // Re-adjust slots when formation changes while preserving players
@@ -174,10 +202,10 @@ export default function App() {
     setSlots(newSlots);
   };
 
-  // Captains & Chips
-  const [captainId, setCaptainId] = useState<string | null>('p-del-1'); // Dayro Moreno default
-  const [viceCaptainId, setViceCaptainId] = useState<string | null>('p-del-2'); // Falcao
-  const [hiddenCaptainId, setHiddenCaptainId] = useState<string | null>('p-med-1'); // Mackalister
+  // Captains & Chips - start unassigned for blank squad
+  const [captainId, setCaptainId] = useState<string | null>(null);
+  const [viceCaptainId, setViceCaptainId] = useState<string | null>(null);
+  const [hiddenCaptainId, setHiddenCaptainId] = useState<string | null>(null);
   const [isHiddenCaptainActive, setIsHiddenCaptainActive] = useState<boolean>(false);
   const [activeChip, setActiveChip] = useState<ChipType>('none');
 
@@ -241,6 +269,19 @@ export default function App() {
     setSlots((prev) =>
       prev.map((s) => (s.slotId === slotId ? { ...s, player } : s))
     );
+  };
+
+  const handleSwapSlots = (slotId1: string, slotId2: string) => {
+    setSlots((prev) => {
+      const s1 = prev.find((s) => s.slotId === slotId1);
+      const s2 = prev.find((s) => s.slotId === slotId2);
+      if (!s1 || !s2) return prev;
+      return prev.map((s) => {
+        if (s.slotId === slotId1) return { ...s, player: s2.player };
+        if (s.slotId === slotId2) return { ...s, player: s1.player };
+        return s;
+      });
+    });
   };
 
   const handleSetCaptain = (id: string) => {
@@ -312,7 +353,7 @@ export default function App() {
       userName: kycRecord.fullName || 'Mi Usuario DT',
       userPhone: kycRecord.phone || '312 849 2011',
       amountTokens,
-      amountCOP: amountTokens * 1000,
+      amountCOP: amountTokens,
       method: 'Nequi',
       referenceCode: `WD-${Math.floor(10000000 + Math.random() * 90000000)}`,
       agentId: 'agt-col-01',
@@ -382,14 +423,27 @@ export default function App() {
       console.error('Error saving profile', e);
     }
     if (profile.initialTokensBonus) {
-      setUserTokens((prev) => Math.max(prev, profile.initialTokensBonus!));
+      setUserTokens(profile.initialTokensBonus);
     } else if (profile.isFreemium) {
-      setUserTokens((prev) => Math.max(prev, 450));
+      setUserTokens(10);
     }
+    // Set completely blank squad for the manager
+    handleClearSquad();
     setTournament(profile.selectedLeague.category);
     setIsWorstXIMode(Boolean(profile.selectedLeague.isWorstXI));
     setIsOnboardingOpen(false);
-    setActiveTab('squad'); // Direct user to "Mi Once"
+    setActiveTab('leagues'); // Direct user to "Ligas" upon login/register
+  };
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem('master_dt_user_profile');
+    } catch (e) {
+      console.error('Error removing profile on logout', e);
+    }
+    setUserProfile(null);
+    handleClearSquad();
+    setIsOnboardingOpen(true);
   };
 
   const handleJoinLeagueWithSquadChoice = ({
@@ -427,13 +481,8 @@ export default function App() {
     setTournament(league.category);
     setIsWorstXIMode(Boolean(league.isWorstXI));
 
-    // 4. Apply squad choice
-    if (choice === 'fresh') {
-      handleClearSquad();
-    } else if (choice === 'autofill') {
-      handleAutoFillSquad();
-    }
-    // if 'duplicate', keep current slots
+    // 4. In BETA Freemium: When registering/joining the league, the team must be completely blank
+    handleClearSquad();
 
     // 5. Deduct tokens if applicable
     if (league.entryTokens && league.entryTokens > 0) {
@@ -442,6 +491,50 @@ export default function App() {
 
     // 6. Navigate to squad view
     setActiveTab('squad');
+  };
+
+  const handleSyncRealApiScores = (apiPlayers: ApiFootballPlayer[]) => {
+    setSlots((prevSlots) =>
+      prevSlots.map((slot) => {
+        if (!slot.player) return slot;
+        const currentName = slot.player.name.toLowerCase();
+        // Match player by full name or last name
+        const match = apiPlayers.find((ap) => {
+          const apName = ap.name.toLowerCase();
+          const apLastName = apName.split(' ').pop() || apName;
+          const currentLastName = currentName.split(' ').pop() || currentName;
+          return (
+            apName === currentName ||
+            currentName.includes(apLastName) ||
+            apName.includes(currentLastName)
+          );
+        });
+
+        if (match) {
+          return {
+            ...slot,
+            player: {
+              ...slot.player,
+              stats: {
+                ...slot.player.stats,
+                minutesPlayed: match.stats.minutes,
+                goals: match.stats.goals,
+                assists: match.stats.assists,
+                saves: match.stats.saves,
+                yellowCards: match.stats.yellowCards,
+                redCards: match.stats.redCards,
+                cleanSheet: match.stats.cleanSheet,
+                penaltySaves: match.stats.penaltiesSaved,
+                penaltyMissed: match.stats.penaltiesMissed,
+                goalsConceded: match.stats.goalsConceded,
+                matchRating: match.stats.rating,
+              },
+            },
+          };
+        }
+        return slot;
+      })
+    );
   };
 
   const sourceLeaguesForDuplicate = [
@@ -469,8 +562,10 @@ export default function App() {
         userProfile={userProfile}
         onOpenProfileOrOnboarding={() => {
           setOnboardingInitialStep(1);
-          setIsOnboardingOpen(true);
+          handleOpenAuth('login');
         }}
+        onOpenAuth={handleOpenAuth}
+        onLogout={handleLogout}
       />
 
       {/* Main Content Area */}
@@ -479,33 +574,80 @@ export default function App() {
         {activeTab === 'squad' && (
           <div className="space-y-4">
             {/* Real-Time Budget & Squad Limits Tracker */}
-            <BudgetTrackerBar slots={slots} maxBudget={100.0} />
+            <BudgetTrackerBar slots={slots} maxBudget={120.0} />
 
-            {/* Tactical Pitch with Players, Formations & Chips */}
-            <PitchView
-              formation={formation}
-              setFormation={handleFormationChange}
-              slots={slots}
-              captainId={captainId}
-              viceCaptainId={viceCaptainId}
-              hiddenCaptainId={hiddenCaptainId}
-              isHiddenCaptainActive={isHiddenCaptainActive}
-              activeChip={activeChip}
-              onSetCaptain={handleSetCaptain}
-              onSetViceCaptain={handleSetViceCaptain}
-              onToggleHiddenCaptain={handleToggleHiddenCaptain}
-              onActivateChip={handleActivateChip}
-              onSelectSlotForReplacement={handleSelectSlotForReplacement}
-              onInspectPlayer={(player, score) => setInspectedPlayer({ player, score })}
-              isWorstXIMode={isWorstXIMode}
-              userProfile={userProfile}
-              onOpenOnboarding={() => {
-                setOnboardingInitialStep(3); // direct to change league/DT
-                setIsOnboardingOpen(true);
-              }}
-              onClearSquad={handleClearSquad}
-              onAutoFillSquad={handleAutoFillSquad}
-            />
+            {/* Sub-view Switcher: Tactical Pitch vs D3 Advanced Analytics */}
+            <div className="flex items-center justify-between bg-[#0C1D16] border border-[#143426] p-1.5 rounded-2xl shadow-md">
+              <div className="flex items-center gap-1 w-full sm:w-auto">
+                <button
+                  onClick={() => setSquadSubView('pitch')}
+                  className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition cursor-pointer ${
+                    squadSubView === 'pitch'
+                      ? 'bg-[#C9F04D] text-[#071410] shadow'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <span className="text-sm">🏟️</span>
+                  <span>Alineación Táctica</span>
+                </button>
+                <button
+                  onClick={() => setSquadSubView('analytics')}
+                  className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition cursor-pointer relative ${
+                    squadSubView === 'analytics'
+                      ? 'bg-[#C9F04D] text-[#071410] shadow'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <span className="text-sm">📊</span>
+                  <span>Analítica D3 (5 Jornadas)</span>
+                  <span className="ml-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-black bg-[#54C3BB]/25 text-[#54C3BB] border border-[#54C3BB]/40">
+                    D3
+                  </span>
+                </button>
+              </div>
+
+              {/* Quick tip on desktop */}
+              <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-gray-400 pr-2">
+                <span>Rendimiento histórico real</span>
+              </div>
+            </div>
+
+            {squadSubView === 'pitch' ? (
+              /* Tactical Pitch with Players, Formations & Chips */
+              <PitchView
+                formation={formation}
+                setFormation={handleFormationChange}
+                slots={slots}
+                captainId={captainId}
+                viceCaptainId={viceCaptainId}
+                hiddenCaptainId={hiddenCaptainId}
+                isHiddenCaptainActive={isHiddenCaptainActive}
+                activeChip={activeChip}
+                onSetCaptain={handleSetCaptain}
+                onSetViceCaptain={handleSetViceCaptain}
+                onToggleHiddenCaptain={handleToggleHiddenCaptain}
+                onActivateChip={handleActivateChip}
+                onSelectSlotForReplacement={handleSelectSlotForReplacement}
+                onSwapSlots={handleSwapSlots}
+                onOpenAnalytics={() => setSquadSubView('analytics')}
+                onInspectPlayer={(player, score) => setInspectedPlayer({ player, score })}
+                isWorstXIMode={isWorstXIMode}
+                userProfile={userProfile}
+                onOpenOnboarding={() => {
+                  setOnboardingInitialStep(3); // direct to change league/DT
+                  setIsOnboardingOpen(true);
+                }}
+                onClearSquad={handleClearSquad}
+                onAutoFillSquad={handleAutoFillSquad}
+              />
+            ) : (
+              /* D3 Advanced Historical Analytics Dashboard */
+              <SquadAnalyticsDashboard
+                slots={slots}
+                onInspectPlayer={(player, score) => setInspectedPlayer({ player, score })}
+                onNavigateToBuilder={() => setSquadSubView('pitch')}
+              />
+            )}
           </div>
         )}
 
@@ -564,6 +706,7 @@ export default function App() {
             onTriggerEvent={handleTriggerLiveEvent}
             recentEvents={liveEvents}
             onInspectPlayer={(player, score) => setInspectedPlayer({ player, score })}
+            onSyncRealApiScores={handleSyncRealApiScores}
           />
         )}
 
@@ -617,10 +760,10 @@ export default function App() {
         isOpen={Boolean(drawerTargetSlot)}
         onClose={() => setDrawerTargetSlot(null)}
         targetSlot={drawerTargetSlot}
-        allPlayers={MOCK_PLAYERS}
+        allPlayers={allPlayers}
         currentSlots={slots}
         onSelectPlayer={handleSelectPlayerFromDrawer}
-        maxBudget={100.0}
+        maxBudget={120.0}
       />
 
       <ScoreBreakdownModal
@@ -629,12 +772,12 @@ export default function App() {
         onClose={() => setInspectedPlayer(null)}
       />
 
-      {/* ONBOARDING FLOW: 1. Login -> 2. Nombre DT/Equipo -> 3. Elegir Liga -> 4. Seleccionar Equipo */}
-      <OnboardingFlow
+      {/* BETA AUTH MODAL: Login sencillo y Registro con Nombre, Correo y Clave */}
+      <BetaAuthModal
+        key={authModalMode}
         isOpen={isOnboardingOpen}
+        initialMode={authModalMode}
         onClose={userProfile ? () => setIsOnboardingOpen(false) : undefined}
-        currentProfile={userProfile}
-        initialStep={onboardingInitialStep}
         onComplete={handleCompleteOnboarding}
       />
     </div>

@@ -19,6 +19,7 @@ import {
   Layers,
   X,
   ChevronDown,
+  BarChart3,
 } from 'lucide-react';
 import {
   Formation,
@@ -48,6 +49,8 @@ interface PitchViewProps {
   onActivateChip: (chip: ChipType) => void;
   onSelectSlotForReplacement: (slot: SquadPlayerSlot) => void;
   onInspectPlayer: (player: Player, score: CalculatedScore) => void;
+  onSwapSlots?: (slotId1: string, slotId2: string) => void;
+  onOpenAnalytics?: () => void;
   isWorstXIMode?: boolean;
   userProfile?: UserDTProfile | null;
   onOpenOnboarding?: () => void;
@@ -82,6 +85,8 @@ export const PitchView: React.FC<PitchViewProps> = ({
   onActivateChip,
   onSelectSlotForReplacement,
   onInspectPlayer,
+  onSwapSlots,
+  onOpenAnalytics,
   isWorstXIMode = false,
   userProfile,
   onOpenOnboarding,
@@ -100,9 +105,19 @@ export const PitchView: React.FC<PitchViewProps> = ({
     score: CalculatedScore;
   } | null>(null);
 
+  const [recentlySwappedSlotIds, setRecentlySwappedSlotIds] = useState<string[]>([]);
   const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
   const [selectedSourceLeagueId, setSelectedSourceLeagueId] = useState<string>('');
   const [duplicateSuccessMessage, setDuplicateSuccessMessage] = useState<string>('');
+
+  const handleQuickSwap = (targetSlotId: string) => {
+    if (!selectedPlayerForAction || !onSwapSlots) return;
+    const sourceSlotId = selectedPlayerForAction.slot.slotId;
+    onSwapSlots(sourceSlotId, targetSlotId);
+    setRecentlySwappedSlotIds([sourceSlotId, targetSlotId]);
+    setTimeout(() => setRecentlySwappedSlotIds([]), 1500);
+    setSelectedPlayerForAction(null);
+  };
 
   const starterSlots = slots.filter((s) => s.isStarter);
   const benchSlots = slots.filter((s) => !s.isStarter);
@@ -141,21 +156,24 @@ export const PitchView: React.FC<PitchViewProps> = ({
 
   const renderPlayerCard = (slot: SquadPlayerSlot) => {
     const player = slot.player;
+    const isRecentlySwapped = recentlySwappedSlotIds.includes(slot.slotId);
 
     if (!player) {
       return (
         <button
           key={slot.slotId}
           onClick={() => onSelectSlotForReplacement(slot)}
-          className="flex flex-col items-center justify-center p-2 rounded-xl bg-[#0F2319]/80 border-2 border-dashed border-[#54C3BB]/40 hover:border-[#C9F04D] hover:bg-[#153827] transition w-18 sm:w-22 min-h-[95px] sm:min-h-[110px] group cursor-pointer"
+          className={`player-slot-card flex flex-col items-center justify-center p-2 rounded-xl bg-[#0F2319]/85 backdrop-blur-xs border-2 border-dashed border-[#54C3BB]/40 hover:border-[#C9F04D] hover:bg-[#153827] transition-all duration-300 w-18 sm:w-22 min-h-[95px] sm:min-h-[110px] group cursor-pointer ${
+            isRecentlySwapped ? 'animate-swap-glow ring-2 ring-[#C9F04D]' : ''
+          }`}
         >
-          <div className="w-8 h-8 rounded-full bg-[#071410] border border-[#54C3BB]/60 flex items-center justify-center text-[#54C3BB] group-hover:text-[#C9F04D] group-hover:scale-110 transition">
+          <div className="w-8 h-8 rounded-full bg-[#071410] border border-[#54C3BB]/60 flex items-center justify-center text-[#54C3BB] group-hover:text-[#C9F04D] group-hover:scale-110 transition duration-300">
             <Plus className="w-4 h-4" />
           </div>
           <span className="text-[10px] font-mono font-bold text-gray-400 mt-1 uppercase">
             {slot.position}
           </span>
-          <span className="text-[9px] text-[#54C3BB] group-hover:text-[#C9F04D]">
+          <span className="text-[9px] text-[#54C3BB] group-hover:text-[#C9F04D] transition-colors">
             Añadir
           </span>
         </button>
@@ -176,15 +194,17 @@ export const PitchView: React.FC<PitchViewProps> = ({
 
     return (
       <div
-        key={slot.slotId}
+        key={`${slot.slotId}-${player.id}`}
         onClick={() => setSelectedPlayerForAction({ slot, player, score })}
-        className={`relative flex flex-col items-center p-1.5 sm:p-2 rounded-xl transition cursor-pointer group select-none w-18 sm:w-22 ${
+        className={`player-slot-card animate-player-swap relative flex flex-col items-center p-1.5 sm:p-2 rounded-xl cursor-pointer group select-none w-18 sm:w-22 transition-all duration-300 ${
+          isRecentlySwapped ? 'animate-swap-glow ring-2 ring-[#C9F04D]' : ''
+        } ${
           isCap
-            ? 'bg-[#0F2319] ring-2 ring-[#E6BE55] shadow-lg shadow-[#E6BE55]/10'
+            ? 'bg-[#0F2319]/95 ring-2 ring-[#E6BE55] shadow-lg shadow-[#E6BE55]/20'
             : isVC
-            ? 'bg-[#0F2319] ring-1 ring-[#54C3BB]'
+            ? 'bg-[#0F2319]/95 ring-1 ring-[#54C3BB]'
             : isHiddenCap
-            ? 'bg-[#0F2319] ring-2 ring-[#C9F04D]'
+            ? 'bg-[#0F2319]/95 ring-2 ring-[#C9F04D]'
             : 'bg-[#0C1D16]/90 hover:bg-[#12281E] border border-[#143426]'
         }`}
       >
@@ -249,7 +269,7 @@ export const PitchView: React.FC<PitchViewProps> = ({
 
         {/* Price & Points Row */}
         <div className="flex items-center justify-between w-full mt-1 pt-1 border-t border-[#143426]/70 text-[10px] font-mono">
-          <span className="text-gray-400 font-semibold">${player.price}M</span>
+          <span className="text-gray-400 font-semibold">${player.price}M USD</span>
           <span
             className={`font-bold px-1 rounded ${
               score.total > 0
@@ -579,8 +599,19 @@ export const PitchView: React.FC<PitchViewProps> = ({
           </div>
         </div>
 
-        {/* Live Total Score Pill */}
-        <div className="flex items-center gap-3">
+        {/* Live Total Score Pill & D3 Analytics Button */}
+        <div className="flex items-center gap-2.5">
+          {onOpenAnalytics && (
+            <button
+              onClick={onOpenAnalytics}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#143426] hover:bg-[#1E4333] text-[#C9F04D] border border-[#C9F04D]/40 text-xs font-mono font-bold transition shadow-sm cursor-pointer group"
+              title="Abrir Dashboard de Estadísticas Avanzadas D3"
+            >
+              <BarChart3 className="w-4 h-4 text-[#C9F04D] group-hover:scale-110 transition-transform" />
+              <span>Estadísticas D3</span>
+            </button>
+          )}
+
           <div className="px-3 py-1.5 rounded-xl bg-[#0F2319] border border-[#C9F04D]/40 text-right">
             <span className="text-[10px] font-mono text-gray-400 block uppercase">
               {isWorstXIMode ? 'Puntaje Peor Once' : 'Puntaje Total Provisorio'}
@@ -721,31 +752,37 @@ export const PitchView: React.FC<PitchViewProps> = ({
         {/* Bottom Penalty Box */}
         <div className="absolute left-1/2 bottom-2 sm:bottom-4 -translate-x-1/2 w-48 sm:w-64 h-20 sm:h-24 border-t-2 border-x-2 border-white/10 pointer-events-none" />
 
-        {/* PORTERO (POR) ROW - TOP (Primer jugador en elegirse) */}
-        <div className="relative z-10">
-          <div className="flex items-center justify-center gap-4 py-2">
-            {porSlots.map(renderPlayerCard)}
+        {/* Pitch Tactical Rows with Formation Transition */}
+        <div
+          key={formation}
+          className="pitch-formation-grid animate-formation-row flex flex-col justify-between flex-1 relative z-10 py-1"
+        >
+          {/* PORTERO (POR) ROW - TOP (Primer jugador en elegirse) */}
+          <div className="relative z-10">
+            <div className="flex items-center justify-center gap-4 py-2 transition-all duration-300">
+              {porSlots.map(renderPlayerCard)}
+            </div>
           </div>
-        </div>
 
-        {/* DEFENSAS (DEF) ROW */}
-        <div className="relative z-10">
-          <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap py-2">
-            {defSlots.map(renderPlayerCard)}
+          {/* DEFENSAS (DEF) ROW */}
+          <div className="relative z-10">
+            <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap py-2 transition-all duration-300">
+              {defSlots.map(renderPlayerCard)}
+            </div>
           </div>
-        </div>
 
-        {/* MEDIOCAMPISTAS (MED) ROW */}
-        <div className="relative z-10">
-          <div className="flex items-center justify-center gap-2 sm:gap-4 flex-wrap py-2">
-            {medSlots.map(renderPlayerCard)}
+          {/* MEDIOCAMPISTAS (MED) ROW */}
+          <div className="relative z-10">
+            <div className="flex items-center justify-center gap-2 sm:gap-4 flex-wrap py-2 transition-all duration-300">
+              {medSlots.map(renderPlayerCard)}
+            </div>
           </div>
-        </div>
 
-        {/* DELANTEROS (DEL) ROW - BOTTOM */}
-        <div className="relative z-10">
-          <div className="flex items-center justify-center gap-2 sm:gap-6 flex-wrap py-2">
-            {delSlots.map(renderPlayerCard)}
+          {/* DELANTEROS (DEL) ROW - BOTTOM */}
+          <div className="relative z-10">
+            <div className="flex items-center justify-center gap-2 sm:gap-6 flex-wrap py-2 transition-all duration-300">
+              {delSlots.map(renderPlayerCard)}
+            </div>
           </div>
         </div>
       </div>
@@ -900,6 +937,22 @@ export const PitchView: React.FC<PitchViewProps> = ({
                 </div>
               </button>
 
+              {/* Analytics D3 */}
+              {onOpenAnalytics && (
+                <button
+                  onClick={() => {
+                    setSelectedPlayerForAction(null);
+                    onOpenAnalytics();
+                  }}
+                  className="w-full flex items-center justify-between p-3 rounded-xl bg-[#0F2319] text-[#C9F04D] border border-[#143426] hover:border-[#C9F04D] text-sm font-semibold transition cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-[#C9F04D]" />
+                    <span>Ver Analítica D3 (5 Jornadas)</span>
+                  </div>
+                </button>
+              )}
+
               {/* Replace Player */}
               <button
                 onClick={() => {
@@ -914,6 +967,52 @@ export const PitchView: React.FC<PitchViewProps> = ({
                   <span>Transferir / Cambiar Jugador</span>
                 </div>
               </button>
+
+              {/* Quick Substitution Options (Starters <-> Bench) */}
+              {onSwapSlots && (
+                <div className="pt-2 border-t border-[#143426]">
+                  <span className="block text-[11px] font-mono text-gray-400 uppercase tracking-wider mb-2">
+                    {selectedPlayerForAction.slot.isStarter
+                      ? '⚡ Sustitución Rápida con la Banca:'
+                      : '⚡ Ingresar como Titular (Intercambiar con):'}
+                  </span>
+                  <div className="grid grid-cols-2 gap-1.5 max-h-36 overflow-y-auto">
+                    {(selectedPlayerForAction.slot.isStarter
+                      ? benchSlots.filter((b) => b.player !== null)
+                      : starterSlots.filter(
+                          (s) =>
+                            s.player !== null &&
+                            s.position === selectedPlayerForAction.player.position
+                        )
+                    ).map((targetSlot) => {
+                      if (!targetSlot.player) return null;
+                      return (
+                        <button
+                          key={targetSlot.slotId}
+                          type="button"
+                          onClick={() => handleQuickSwap(targetSlot.slotId)}
+                          className="flex items-center gap-2 p-1.5 rounded-lg bg-[#071410] hover:bg-[#143426] border border-[#1E4333] hover:border-[#C9F04D] text-left transition cursor-pointer group"
+                        >
+                          <img
+                            src={targetSlot.player.photoUrl}
+                            alt={targetSlot.player.name}
+                            className="w-7 h-7 rounded-full object-cover border border-[#1E4333] group-hover:border-[#C9F04D] shrink-0"
+                            referrerPolicy="no-referrer"
+                          />
+                          <div className="overflow-hidden min-w-0">
+                            <span className="block text-xs text-white font-bold truncate group-hover:text-[#C9F04D]">
+                              {targetSlot.player.shortName}
+                            </span>
+                            <span className="block text-[9px] text-gray-400 font-mono truncate">
+                              {targetSlot.position} • {targetSlot.player.club.split(' ')[0]}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             <button

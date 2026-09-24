@@ -238,7 +238,7 @@ export function calculatePlayerScore(
 }
 
 /**
- * Formats COP currency nicely
+ * Formats COP currency nicely (only for recharge module)
  */
 export function formatCOP(amount: number): string {
   return new Intl.NumberFormat('es-CO', {
@@ -249,7 +249,21 @@ export function formatCOP(amount: number): string {
 }
 
 /**
- * Format Millions COP (e.g. 8.5M COP)
+ * Formats Tokens DT (e.g. 15 $DT, 3.640 $DT)
+ */
+export function formatTokens(amount: number): string {
+  return `${amount.toLocaleString('es-CO')} $DT`;
+}
+
+/**
+ * Format player market price in Millions of Dollars (e.g. $8.5M USD)
+ */
+export function formatTokenPrice(millions: number): string {
+  return `$${millions.toFixed(1)}M USD`;
+}
+
+/**
+ * Format Millions COP (for reference)
  */
 export function formatCOPPrice(millions: number): string {
   return `$${millions.toFixed(1)}M`;
